@@ -1,0 +1,182 @@
+#TO INSERT THE CUSTOMER DETAILS INTO DATABASE
+package Flour;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.util.Scanner;
+
+public class Insert {
+    String name;
+    int quantity;
+    int amount;
+    Timestamp visit_date;
+    Insert(String name, int quantity){
+        this.name=name;
+        this.quantity=quantity;
+        this.amount=5*quantity;
+        this.visit_date = new Timestamp(System.currentTimeMillis());
+    }
+    public void save()
+    {
+        String url="jdbc:postgresql://localhost:5432/flourmill1";
+        String name1="postgres";
+        String password="12345";
+        try{
+            Connection conn= DriverManager.getConnection(url,name1,password);
+            String sql="INSERT INTO customers(name,quantity,amount,visit_date) VALUES(?,?,?,?)";
+            PreparedStatement stmt=conn.prepareStatement(sql);
+            stmt.setString(1,name);
+            stmt.setInt(2,quantity);
+            stmt.setInt(3,amount);
+            stmt.setTimestamp(4,visit_date);
+            int rk=stmt.executeUpdate();
+            if (rk>0)
+                System.out.println(" your data saved succesfully");
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    public static void main(String[] args){
+        for (int i=1;i<=5;i++) {
+            System.out.println("enter your  name and quantity of your Grains");
+            Scanner input = new Scanner(System.in);
+            String name = input.next();
+            int quantity = input.nextInt();
+            Flour.Insert fm = new Flour.Insert(name, quantity);
+            fm.save();
+            }
+        }
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+
+#TO DELETE THE PARTICULAR CUSTOMER DETAILS
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class Delete {
+    String name;
+    Delete(String name1){
+        this.name=name1;
+    }
+    public void delete() {
+        try {
+            String url = "jdbc:postgresql://localhost:5432/flourmill1";
+            String name2 = "postgres";
+            String password = "12345";
+            Connection conn = DriverManager.getConnection(url, name2, password);
+            String sql = "DELETE FROM customers WHERE name=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            int row = stmt.executeUpdate();
+            if (row > 0)
+                System.out.println("ROw deleted Succesfully");
+
+
+        } catch (Exception e){
+        throw new RuntimeException(e);}
+    }
+
+    public static void main(String[] args){
+        System.out.println("enter the name ");
+        Scanner input=new Scanner(System.in);
+        String name1=input.next();
+        Delete sc=new Delete(name1);
+        sc.delete();
+
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------
+
+#TO UPDATE THE CUSTOMER DETAILS
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class Update {
+    String name;
+    int quantity;
+    int amount;
+    Update(String name,int quantity){
+        this.name=name;
+        this.quantity=quantity;
+        this.amount=quantity*5;
+    }
+    public void update(){
+        try{
+            String url="jdbc:postgresql://localhost:5432/flourmill1";
+            String name1="postgres";
+            String password="12345";
+            Connection conn= DriverManager.getConnection(url,name1,password);
+            String sql="UPDATE customers SET quantity=?,amount=? WHERE name=?";
+            PreparedStatement stmt=conn.prepareStatement(sql);
+            stmt.setInt(1,quantity);
+            stmt.setInt(2,amount);
+            stmt.setString(3,name);
+            int row=stmt.executeUpdate();
+            if (row>0)
+                System.out.println("updated one row");
+            else
+                System.out.println("Row not updated");
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);}
+    }
+    public static void main(String[]args)
+    {
+        System.out.println("enter name and new quantity");
+        Scanner input=new Scanner(System.in);
+        String name=input.next();
+        int quantity=input.nextInt();
+        Update sc=new Update(name,quantity);
+        sc.update();
+
+
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------------
+# TO DISPLAY THE ALL CUSTOMER DETAILS EXISTING IN DATABASE
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class Display {
+    public void display(){
+        try {String url="jdbc:postgresql://localhost:5432/flourmill1";
+        String name1="postgres";
+        String password="12345";
+        Connection conn= DriverManager.getConnection(url,name1,password);
+        String sql = "SELECT * FROM customers";
+            Statement stmt=conn.createStatement();
+        ResultSet rs= stmt.executeQuery(sql);
+        while (rs.next()){
+            System.out.println("ID "+rs.getInt("id")+" NAME "+rs.getString("name")+" QUANTITY "+rs.getInt("quantity")+" AMOUNT "+rs.getInt("amount")+" DATE "+rs.getTimestamp("visit_date"));
+        }
+
+    }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[]args){
+        Display sc=new Display();
+        sc.display();
+
+    }
+}
+
+
